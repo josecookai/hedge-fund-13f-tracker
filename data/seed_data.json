@@ -1,0 +1,167 @@
+{
+  "funds": [
+    {
+      "id": "atreides-management",
+      "name": "Atreides Management LP",
+      "manager": "Gavin Baker",
+      "strategy": "Long-term value, technology-focused",
+      "aum": 2000000000,
+      "cik": "0001761945",
+      "sources": ["whalewisdom", "sec_edgar"],
+      "first_tracked_q": "2024-Q4"
+    },
+    {
+      "id": "monolith-management", 
+      "name": "Monolith Management Ltd",
+      "manager": "Unknown",
+      "strategy": "Long, concentrated positions",
+      "aum": 1000000000,
+      "cik": null,
+      "sources": ["holdingschannel"],
+      "first_tracked_q": "2024-Q4"
+    },
+    {
+      "id": "wt-asset-management",
+      "name": "WT Asset Management Ltd",
+      "manager": "Unknown", 
+      "strategy": "Multi-strategy",
+      "aum": 500000000,
+      "cik": null,
+      "sources": ["whalewisdom"],
+      "first_tracked_q": "2024-Q4"
+    },
+    {
+      "id": "situational-awareness",
+      "name": "Situational Awareness LP",
+      "manager": "Unknown",
+      "strategy": "Macro/Event-driven",
+      "aum": 300000000,
+      "cik": null,
+      "sources": ["whalewisdom"],
+      "first_tracked_q": "2024-Q4"
+    }
+  ],
+  "filings": [
+    {
+      "id": "atreides-2024-q4",
+      "fund_id": "atreides-management",
+      "quarter": "2024-Q4",
+      "filing_date": "2025-02-14",
+      "report_date": "2024-12-31",
+      "total_value": 1850000000,
+      "position_count": 28
+    }
+  ],
+  "positions": [
+    {
+      "id": "atreides-2024-q4-nvda",
+      "filing_id": "atreides-2024-q4",
+      "ticker": "NVDA",
+      "cusip": "67066G104",
+      "company_name": "NVIDIA Corporation",
+      "shares": 1500000,
+      "value": 450000000,
+      "portfolio_pct": 24.3,
+      "rank": 1
+    },
+    {
+      "id": "atreides-2024-q4-meta",
+      "filing_id": "atreides-2024-q4",
+      "ticker": "META",
+      "cusip": "30303M102",
+      "company_name": "Meta Platforms Inc",
+      "shares": 800000,
+      "value": 320000000,
+      "portfolio_pct": 17.3,
+      "rank": 2
+    },
+    {
+      "id": "atreides-2024-q4-amzn",
+      "filing_id": "atreides-2024-q4",
+      "ticker": "AMZN",
+      "cusip": "023135106",
+      "company_name": "Amazon.com Inc",
+      "shares": 1200000,
+      "value": 210000000,
+      "portfolio_pct": 11.4,
+      "rank": 3
+    },
+    {
+      "id": "atreides-2024-q4-msft",
+      "filing_id": "atreides-2024-q4",
+      "ticker": "MSFT",
+      "cusip": "594918104",
+      "company_name": "Microsoft Corporation",
+      "shares": 450000,
+      "value": 165000000,
+      "portfolio_pct": 8.9,
+      "rank": 4
+    },
+    {
+      "id": "atreides-2024-q4-avgo",
+      "filing_id": "atreides-2024-q4",
+      "ticker": "AVGO",
+      "cusip": "11135F101",
+      "company_name": "Broadcom Inc",
+      "shares": 80000,
+      "value": 98000000,
+      "portfolio_pct": 5.3,
+      "rank": 5
+    },
+    {
+      "id": "atreides-2024-q4-tem",
+      "filing_id": "atreides-2024-q4",
+      "ticker": "TEM",
+      "cusip": "87989T104",
+      "company_name": "Tempus AI Inc",
+      "shares": 500000,
+      "value": 45000000,
+      "portfolio_pct": 2.4,
+      "rank": 6
+    },
+    {
+      "id": "atreides-2024-q4-vst",
+      "filing_id": "atreides-2024-q4",
+      "ticker": "VST",
+      "cusip": "92840M102",
+      "company_name": "Vistra Corp",
+      "shares": 300000,
+      "value": 48000000,
+      "portfolio_pct": 2.6,
+      "rank": 7
+    },
+    {
+      "id": "atreides-2024-q4-app",
+      "filing_id": "atreides-2024-q4",
+      "ticker": "APP",
+      "cusip": "03852U106",
+      "company_name": "AppLovin Corporation",
+      "shares": 350000,
+      "value": 42000000,
+      "portfolio_pct": 2.3,
+      "rank": 8
+    },
+    {
+      "id": "atreides-2024-q4-coin",
+      "filing_id": "atreides-2024-q4",
+      "ticker": "COIN",
+      "cusip": "19260Q107",
+      "company_name": "Coinbase Global Inc",
+      "shares": 180000,
+      "value": 38000000,
+      "portfolio_pct": 2.1,
+      "rank": 9
+    },
+    {
+      "id": "atreides-2024-q4-cf",
+      "filing_id": "atreides-2024-q4",
+      "ticker": "CF",
+      "cusip": "125269100",
+      "company_name": "CF Industries Holdings Inc",
+      "shares": 400000,
+      "value": 32000000,
+      "portfolio_pct": 1.7,
+      "rank": 10
+    }
+  ]
+}
