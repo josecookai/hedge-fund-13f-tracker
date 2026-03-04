@@ -6,10 +6,19 @@ Uses SEC EDGAR API and web scraping as fallback
 import requests
 import time
 import re
+import logging
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional
 from pathlib import Path
 from parse_13f import parse_13f_file
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+
+# Setup logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 class SECEdgarFetcher:
     """Fetch 13F filings from SEC EDGAR"""
@@ -35,6 +44,29 @@ class SECEdgarFetcher:
         if elapsed < self.min_delay:
             time.sleep(self.min_delay - elapsed)
         self.last_request_time = time.time()
+
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        retry=retry_if_exception_type((requests.RequestException, requests.Timeout)),
+        reraise=True
+    )
+    def _request_with_retry(self, method, url, **kwargs):
+        """Make HTTP request with retry logic"""
+        self._rate_limit()
+        response = self.session.request(method, url, timeout=self.timeout, **kwargs)
+        
+        # Handle specific status codes
+        if response.status_code == 429:
+            logger.warning(f"Rate limited (429) for {url}, waiting...")
+            time.sleep(5)
+            raise requests.RequestException("Rate limited")
+        elif response.status_code == 403:
+            logger.error(f"Forbidden (403) for {url} - check user agent")
+            raise requests.RequestException("Forbidden")
+        
+        response.raise_for_status()
+        return response
     
     def search_filings(self, cik: str, filing_type: str = "13F-HR", 
                        count: int = 10) -> List[Dict]:
@@ -42,8 +74,6 @@ class SECEdgarFetcher:
         Search for 13F filings by CIK
         Returns list of filing metadata
         """
-        self._rate_limit()
-        
         params = {
             'action': 'getcompany',
             'CIK': cik,
@@ -55,8 +85,8 @@ class SECEdgarFetcher:
         }
         
         try:
-            response = self.session.get(self.BASE_URL, params=params, timeout=self.timeout)
-            response.raise_for_status()
+            response = self._request_with_retry('GET', self.BASE_URL, params=params)
+            logger.info(f"Fetched filings for CIK {cik}")
             
             # Parse XML response
             import xml.etree.ElementTree as ET
@@ -90,7 +120,7 @@ class SECEdgarFetcher:
             return filings
             
         except Exception as e:
-            print(f"Error searching filings: {e}")
+            logger.error(f"Error searching filings for CIK {cik}: {e}")
             return []
     
     def get_filing_document(self, cik: str, accession: str, 
@@ -99,8 +129,6 @@ class SECEdgarFetcher:
         Fetch specific document from a filing
         Returns raw content or None if not found
         """
-        self._rate_limit()
-        
         # Format CIK (pad to 10 digits)
         cik_padded = cik.zfill(10)
         
@@ -110,30 +138,32 @@ class SECEdgarFetcher:
         url = f"{self.ARCHIVES_URL}/{cik_padded}/{accession_clean}/{doc_type}"
         
         try:
-            response = self.session.get(url, timeout=self.timeout)
-            if response.status_code == 200:
-                return response.text
-            
-            # Try alternative filenames
-            alternatives = [
-                'infotable.xml',
-                'InfoTable.xml',
-                f"{doc_type}.xml",
-                'form13fInfoTable.htm'
-            ]
-            
-            for alt in alternatives:
-                self._rate_limit()
-                alt_url = f"{self.ARCHIVES_URL}/{cik_padded}/{accession_clean}/{alt}"
-                response = self.session.get(alt_url, timeout=self.timeout)
-                if response.status_code == 200:
-                    return response.text
-            
-            return None
+            response = self._request_with_retry('GET', url)
+            logger.info(f"Fetched document: {accession}/{doc_type}")
+            return response.text
             
         except Exception as e:
-            print(f"Error fetching document: {e}")
-            return None
+            logger.warning(f"Primary document not found: {url}, trying alternatives...")
+        
+        # Try alternative filenames
+        alternatives = [
+            'infotable.xml',
+            'InfoTable.xml',
+            f"{doc_type}.xml",
+            'form13fInfoTable.htm'
+        ]
+        
+        for alt in alternatives:
+            try:
+                alt_url = f"{self.ARCHIVES_URL}/{cik_padded}/{accession_clean}/{alt}"
+                response = self._request_with_retry('GET', alt_url)
+                logger.info(f"Found alternative document: {alt}")
+                return response.text
+            except Exception:
+                continue
+        
+        logger.error(f"Could not find document for accession: {accession}")
+        return None
     
     def download_filing(self, cik: str, accession: str, 
                        output_dir: str = 'data/sec_filings') -> Optional[str]:

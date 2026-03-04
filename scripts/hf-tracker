@@ -66,13 +66,17 @@ class TrackerCLI:
         """Show holdings for a specific fund"""
         cursor = self.conn.cursor()
         
-        # Get fund info
+        # Validate fund exists
         cursor.execute('SELECT * FROM funds WHERE id = ?', (fund_id,))
         fund = cursor.fetchone()
         
         if not fund:
             print(f"❌ Fund not found: {fund_id}")
-            print("Run: hf-tracker list-funds")
+            print("\nAvailable funds:")
+            cursor.execute('SELECT id, name FROM funds ORDER BY name')
+            for row in cursor.fetchall():
+                print(f"  • {row[0]} - {row[1]}")
+            print("\nRun: hf-tracker list-funds")
             return
         
         # Determine quarter

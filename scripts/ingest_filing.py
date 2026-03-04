@@ -7,6 +7,7 @@ import sqlite3
 import json
 import csv
 import argparse
+import logging
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Optional
@@ -14,6 +15,12 @@ from typing import Dict, List, Optional
 # Import local modules
 import sys
 sys.path.insert(0, str(Path(__file__).parent))
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 from parse_13f import parse_13f_file
 from fetch_sec import SECEdgarFetcher, fetch_fund_13f
@@ -111,8 +118,37 @@ class FilingIngester:
         print(f"   Total value: ${total_value:,.0f}")
         return True
     
+    def _validate_quarter(self, quarter: str) -> bool:
+        """Validate quarter format (YYYY-QN)"""
+        import re
+        pattern = r'^\d{4}-Q[1-4]$'
+        return bool(re.match(pattern, quarter))
+    
+    def _validate_fund_exists(self, fund_id: str) -> bool:
+        """Check if fund exists in database"""
+        self.cursor.execute('SELECT 1 FROM funds WHERE id = ?', (fund_id,))
+        return self.cursor.fetchone() is not None
+    
     def import_from_csv(self, filepath: str, fund_id: str, quarter: str) -> bool:
         """Import positions from CSV file"""
+        # Validate inputs
+        if not self._validate_quarter(quarter):
+            logger.error(f"Invalid quarter format: {quarter}. Expected: YYYY-QN (e.g., 2024-Q4)")
+            return False
+        
+        if not self._validate_fund_exists(fund_id):
+            logger.error(f"Fund not found: {fund_id}")
+            logger.info("Available funds:")
+            self.cursor.execute('SELECT id, name FROM funds')
+            for row in self.cursor.fetchall():
+                logger.info(f"  - {row[0]}: {row[1]}")
+            return False
+        
+        # Validate file exists
+        if not Path(filepath).exists():
+            logger.error(f"File not found: {filepath}")
+            return False
+        
         print(f"Importing from CSV: {filepath}")
         
         try:
