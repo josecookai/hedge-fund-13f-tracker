@@ -14,7 +14,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, JSONResponse
 import uvicorn
 
-DB_PATH = Path(__file__).parent.parent / 'data' / 'tracker.db'
+DB_PATH = Path(__file__).resolve().parent.parent / 'data' / 'tracker.db'
 TEMPLATES_DIR = Path(__file__).parent / 'templates'
 STATIC_DIR = Path(__file__).parent / 'static'
 

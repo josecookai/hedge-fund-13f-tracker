@@ -10,7 +10,7 @@ from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
 from datetime import datetime
 
-DB_PATH = Path(__file__).parent.parent / 'data' / 'tracker.db'
+DB_PATH = Path(__file__).resolve().parent.parent / 'data' / 'tracker.db'
 
 
 @dataclass

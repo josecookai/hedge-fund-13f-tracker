@@ -9,8 +9,8 @@ from pathlib import Path
 from typing import Optional
 import sys
 
-# Database path (relative to project root)
-DB_PATH = Path(__file__).parent.parent / 'data' / 'tracker.db'
+# Database path (relative to project root, following symlinks)
+DB_PATH = Path(__file__).resolve().parent.parent / 'data' / 'tracker.db'
 
 
 class TrackerCLI:
