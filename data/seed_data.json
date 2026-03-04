@@ -6,19 +6,21 @@
       "manager": "Gavin Baker",
       "strategy": "Long-term value, technology-focused",
       "aum": 2000000000,
-      "cik": "0001761945",
+      "cik": "0001736297",
       "sources": ["whalewisdom", "sec_edgar"],
-      "first_tracked_q": "2024-Q4"
+      "first_tracked_q": "2024-Q4",
+      "13f_status": "VERIFIED"
     },
     {
       "id": "monolith-management", 
       "name": "Monolith Management Ltd",
-      "manager": "Unknown",
+      "manager": "Xi Cao, Timothy Wang",
       "strategy": "Long, concentrated positions",
-      "aum": 1000000000,
-      "cik": null,
-      "sources": ["holdingschannel"],
-      "first_tracked_q": "2024-Q4"
+      "aum": 209648000,
+      "cik": "0001652044",
+      "sources": ["holdingschannel", "sec_edgar"],
+      "first_tracked_q": "2024-Q4",
+      "13f_status": "VERIFIED"
     },
     {
       "id": "wt-asset-management",
@@ -28,17 +30,19 @@
       "aum": 500000000,
       "cik": null,
       "sources": ["whalewisdom"],
-      "first_tracked_q": "2024-Q4"
+      "first_tracked_q": "2024-Q4",
+      "13f_status": "PENDING_VERIFICATION"
     },
     {
       "id": "situational-awareness",
       "name": "Situational Awareness LP",
       "manager": "Unknown",
       "strategy": "Macro/Event-driven",
-      "aum": 300000000,
-      "cik": null,
-      "sources": ["whalewisdom"],
-      "first_tracked_q": "2024-Q4"
+      "aum": 5516758345,
+      "cik": "0002045724",
+      "sources": ["whalewisdom", "sec_edgar"],
+      "first_tracked_q": "2024-Q4",
+      "13f_status": "VERIFIED"
     }
   ],
   "filings": [
