@@ -8,16 +8,21 @@ import json
 import os
 from pathlib import Path
 
-def init_database(db_path='data/tracker.db', schema_path='data/schema.sql'):
+def init_database(db_path='data/tracker.db', schema_path='data/schema.sql', force=False):
     """Initialize database with schema"""
     
     # Ensure data directory exists
     Path(db_path).parent.mkdir(parents=True, exist_ok=True)
     
-    # Remove existing database for fresh start
+    # Remove existing database for fresh start (only with --force)
     if os.path.exists(db_path):
-        print(f"Removing existing database: {db_path}")
-        os.remove(db_path)
+        if force:
+            print(f"Removing existing database: {db_path}")
+            os.remove(db_path)
+        else:
+            print(f"Database already exists: {db_path}")
+            print("Use --force to overwrite")
+            return sqlite3.connect(db_path)
     
     # Connect to database
     conn = sqlite3.connect(db_path)
@@ -147,6 +152,7 @@ def main():
     parser.add_argument('--schema', default='data/schema.sql', help='Schema file')
     parser.add_argument('--seed', default='data/seed_data.json', help='Seed data file')
     parser.add_argument('--verify', action='store_true', help='Verify after init')
+    parser.add_argument('--force', action='store_true', help='Force overwrite existing database')
     
     args = parser.parse_args()
     
@@ -154,7 +160,7 @@ def main():
     
     try:
         # Initialize database
-        conn = init_database(args.db, args.schema)
+        conn = init_database(args.db, args.schema, force=args.force)
         
         # Seed data
         seed_data(conn, args.seed)

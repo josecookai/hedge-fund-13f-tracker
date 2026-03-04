@@ -8,6 +8,12 @@ import re
 from datetime import datetime
 from typing import Dict, List, Optional
 
+try:
+    from bs4 import BeautifulSoup
+    BS4_AVAILABLE = True
+except ImportError:
+    BS4_AVAILABLE = False
+
 class F13Parser:
     """Parse 13F filings from SEC EDGAR"""
     
@@ -102,15 +108,66 @@ class F13Parser:
             return None
     
     def _parse_html_table(self, content: str) -> Dict:
-        """Fallback parser for HTML table format"""
+        """Parse HTML table format using BeautifulSoup"""
         holdings = []
-        # This is a simplified parser - full implementation would use BeautifulSoup
-        return {
-            'holdings': holdings,
-            'total_positions': len(holdings),
-            'parsed_at': datetime.now().isoformat(),
-            'note': 'HTML parsing not fully implemented'
-        }
+        
+        if not BS4_AVAILABLE:
+            return {
+                'holdings': holdings,
+                'total_positions': 0,
+                'parsed_at': datetime.now().isoformat(),
+                'note': 'BeautifulSoup not installed, cannot parse HTML'
+            }
+        
+        try:
+            soup = BeautifulSoup(content, 'lxml')
+            
+            # Look for tables in the HTML
+            tables = soup.find_all('table')
+            
+            for table in tables:
+                rows = table.find_all('tr')
+                for row in rows[1:]:  # Skip header row
+                    cells = row.find_all(['td', 'th'])
+                    if len(cells) >= 4:
+                        try:
+                            # Extract data from cells
+                            # Typical 13F HTML: Name | CUSIP | Shares | Value | etc.
+                            name = cells[0].get_text(strip=True)
+                            cusip = cells[1].get_text(strip=True) if len(cells) > 1 else ''
+                            shares_text = cells[2].get_text(strip=True).replace(',', '') if len(cells) > 2 else '0'
+                            value_text = cells[3].get_text(strip=True).replace(',', '').replace('$', '') if len(cells) > 3 else '0'
+                            
+                            shares = int(shares_text) if shares_text.isdigit() else 0
+                            value = int(float(value_text) * 1000) if value_text.replace('.', '').isdigit() else 0
+                            
+                            if name and cusip:
+                                holdings.append({
+                                    'company_name': name,
+                                    'cusip': cusip,
+                                    'shares': shares,
+                                    'value': value,
+                                    'title_class': 'COM',
+                                    'investment_discretion': 'SOLE',
+                                    'voting_authority': {'sole': 0, 'shared': 0, 'none': 0}
+                                })
+                        except (ValueError, IndexError) as e:
+                            continue
+            
+            return {
+                'holdings': holdings,
+                'total_positions': len(holdings),
+                'parsed_at': datetime.now().isoformat(),
+                'note': f'Parsed from HTML table ({len(holdings)} positions)'
+            }
+            
+        except Exception as e:
+            return {
+                'holdings': [],
+                'total_positions': 0,
+                'parsed_at': datetime.now().isoformat(),
+                'error': f'HTML parsing failed: {str(e)}'
+            }
     
     def parse_txt_format(self, txt_content: str) -> Dict:
         """

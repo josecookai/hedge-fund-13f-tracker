@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS funds (
 -- Filings table - 13F filings by quarter
 CREATE TABLE IF NOT EXISTS filings (
     id TEXT PRIMARY KEY,
-    fund_id TEXT REFERENCES funds(id),
+    fund_id TEXT REFERENCES funds(id) ON DELETE CASCADE,
     quarter TEXT NOT NULL,
     filing_date DATE,
     report_date DATE,
@@ -65,5 +65,6 @@ CREATE TABLE IF NOT EXISTS alerts (
 -- Create indexes for performance
 CREATE INDEX IF NOT EXISTS idx_positions_filing ON positions(filing_id);
 CREATE INDEX IF NOT EXISTS idx_positions_ticker ON positions(ticker);
+CREATE INDEX IF NOT EXISTS idx_positions_ticker_filing ON positions(ticker, filing_id);
 CREATE INDEX IF NOT EXISTS idx_changes_fund ON position_changes(fund_id, quarter);
 CREATE INDEX IF NOT EXISTS idx_filings_fund_quarter ON filings(fund_id, quarter);

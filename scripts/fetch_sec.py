@@ -9,6 +9,7 @@ import re
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional
 from pathlib import Path
+from parse_13f import parse_13f_file
 
 class SECEdgarFetcher:
     """Fetch 13F filings from SEC EDGAR"""
@@ -16,8 +17,10 @@ class SECEdgarFetcher:
     BASE_URL = "https://www.sec.gov/cgi-bin/browse-edgar"
     ARCHIVES_URL = "https://www.sec.gov/Archives/edgar/data"
     
-    def __init__(self, user_agent: str = "HedgeFundTracker contact@example.com"):
+    def __init__(self, user_agent: str = "HedgeFundTracker contact@example.com", 
+                 timeout: int = 30):
         self.user_agent = user_agent
+        self.timeout = timeout
         self.session = requests.Session()
         self.session.headers.update({
             'User-Agent': user_agent
@@ -52,7 +55,7 @@ class SECEdgarFetcher:
         }
         
         try:
-            response = self.session.get(self.BASE_URL, params=params)
+            response = self.session.get(self.BASE_URL, params=params, timeout=self.timeout)
             response.raise_for_status()
             
             # Parse XML response
@@ -107,7 +110,7 @@ class SECEdgarFetcher:
         url = f"{self.ARCHIVES_URL}/{cik_padded}/{accession_clean}/{doc_type}"
         
         try:
-            response = self.session.get(url)
+            response = self.session.get(url, timeout=self.timeout)
             if response.status_code == 200:
                 return response.text
             
@@ -122,7 +125,7 @@ class SECEdgarFetcher:
             for alt in alternatives:
                 self._rate_limit()
                 alt_url = f"{self.ARCHIVES_URL}/{cik_padded}/{accession_clean}/{alt}"
-                response = self.session.get(alt_url)
+                response = self.session.get(alt_url, timeout=self.timeout)
                 if response.status_code == 200:
                     return response.text
             
@@ -189,7 +192,6 @@ def fetch_fund_13f(cik: str, quarter: Optional[str] = None) -> Dict:
         return {'error': 'Could not download filing'}
     
     # Parse the filing
-    from parse_13f import parse_13f_file
     holdings = parse_13f_file(filepath)
     
     return {
