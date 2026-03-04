@@ -46,17 +46,17 @@ Track hedge fund 13F filings to monitor institutional "smart money" positions:
 git clone https://github.com/josecookai/hedge-fund-13f-tracker.git
 cd hedge-fund-13f-tracker
 
+# Install dependencies
+pip install -r requirements.txt
+
 # Setup database
-python scripts/init_db.py
+python scripts/init_db.py --force
 
-# Import sample data
-python scripts/ingest_filing.py --fund atreides-management --quarter 2024-Q4
-
-# Generate report
-./scripts/hf-tracker report --fund atreides-management
-
-# Check for changes
-./scripts/hf-tracker changes --fund atreides-management --quarter 2024-Q4
+# Use CLI to explore data
+./scripts/hf-tracker list-funds
+./scripts/hf-tracker holdings --fund atreides-management --quarter 2024-Q4
+./scripts/hf-tracker compare --fund atreides-management -q1 2024-Q3 -q2 2024-Q4
+./scripts/hf-tracker consensus --ticker NVDA
 ```
 
 ## 🤖 Skill Integration
@@ -127,46 +127,78 @@ hedge-fund-13f-tracker/
 
 *Add custom funds via `hf-tracker add-fund`*
 
-## 🛠️ Commands
+## 🛠️ CLI Commands
 
-### CLI Commands
+### Available Commands
+
 ```bash
-# List tracked funds
+# List all tracked hedge funds
 ./scripts/hf-tracker list-funds
 
-# Show fund holdings
+# Show fund holdings (default: latest quarter)
 ./scripts/hf-tracker holdings --fund atreides-management
+./scripts/hf-tracker holdings --fund atreides-management --quarter 2024-Q4 --top 10
 
-# Compare quarters
-./scripts/hf-tracker compare --fund atreides-management --q1 2024-Q3 --q2 2024-Q4
+# Compare quarters for change detection
+./scripts/hf-tracker compare --fund atreides-management -q1 2024-Q3 -q2 2024-Q4
 
-# Show changes
-./scripts/hf-tracker changes --fund atreides-management
-
-# Consensus view
+# Show consensus across all funds for a ticker
 ./scripts/hf-tracker consensus --ticker NVDA
+./scripts/hf-tracker consensus --ticker META
+```
 
-# Start web dashboard
-./scripts/hf-tracker dashboard
+### Data Import Commands
+
+```bash
+# Import from SEC EDGAR (requires CIK in database)
+python scripts/ingest_filing.py --fund atreides-management --quarter 2024-Q4 --source sec
+
+# Import from CSV
+python scripts/ingest_filing.py --fund monolith-management --quarter 2024-Q4 --source csv --file data/sample.csv
+
+# Import from JSON
+python scripts/ingest_filing.py --fund situational-awareness --quarter 2024-Q4 --source json --file data/sample.json
 ```
 
 ## 📈 Sample Output
 
+### List Funds
 ```
-🐋 Atreides Management LP - 2024-Q4 13F
-Manager: Gavin Baker | AUM: $2.0B
+🐋 Tracked Hedge Funds
 
-Top Holdings:
-┌────┬────────┬───────────┬────────────┬──────────┐
-│Rank│ Ticker │ Shares    │ Value      │ QoQ Chg  │
-├────┼────────┼───────────┼────────────┼──────────┤
-│ 1  │ NVDA   │ 1,500,000 │ $450.0M    │ +15.2%   │
-│ 2  │ META   │   800,000 │ $320.0M    │ +5.3%    │
-│ 3  │ AMZN   │ 1,200,000 │ $210.0M    │ -2.1%    │
-│ 4  │ TEM    │   500,000 │ $ 45.0M    │ NEW      │
-└────┴────────┴───────────┴────────────┴──────────┘
+================================================================================
+Fund                      Manager                       AUM Quarter     Filings
+--------------------------------------------------------------------------------
+Situational Awareness LP  Unknown                     $5.5B 2024-Q4           1
+Atreides Management LP    Gavin Baker                 $2.0B 2024-Q4           2
+WT Asset Management Ltd   Unknown                     $500M N/A               0
+Monolith Management Ltd   Xi Cao, Timothy Wang        $210M 2024-Q4           1
+================================================================================
+Total: 4 funds
+```
 
-Activity: NEW positions (TEM, APP), ADDED (NVDA, VST), SOLD (PLTR, RIVN)
+### Compare Quarters
+```
+📈 Atreides Management LP
+Comparing 2024-Q3 → 2024-Q4
+
+🆕 NEW POSITIONS:
+   VST    Vistra Corp                      $   48.0M (2.6%)
+   TEM    Tempus AI Inc                    $   45.0M (2.4%)
+   APP    AppLovin Corporation             $   42.0M (2.3%)
+
+❌ SOLD OUT:
+   GOOGL  Alphabet Inc Class A             (was $  420.0M)
+   PLTR   Palantir Technologies            (was $   75.0M)
+
+📈 INCREASED:
+   NVDA   +  15.4%  1300K → 1500K shares
+   AVGO   +  14.3%  70K → 80K shares
+
+📉 DECREASED:
+   AMZN      -2.0%  1225K → 1200K shares
+
+Summary: 5 new, 2 sold, 4 increased, 1 decreased, 0 unchanged
 ```
 
 ## 🗺️ Development Roadmap
