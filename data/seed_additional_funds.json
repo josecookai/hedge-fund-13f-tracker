@@ -1,0 +1,254 @@
+{
+  "filings": [
+    {
+      "id": "tiger-global-2024-q4",
+      "fund_id": "tiger-global",
+      "quarter": "2024-Q4",
+      "filing_date": "2025-02-14",
+      "report_date": "2024-12-31",
+      "total_value": 29714313270,
+      "position_count": 54
+    },
+    {
+      "id": "coatue-2024-q4",
+      "fund_id": "coatue-management",
+      "quarter": "2024-Q4",
+      "filing_date": "2025-02-14",
+      "report_date": "2024-12-31",
+      "total_value": 15000000000,
+      "position_count": 35
+    },
+    {
+      "id": "viking-2024-q4",
+      "fund_id": "viking-global",
+      "quarter": "2024-Q4",
+      "filing_date": "2025-02-14",
+      "report_date": "2024-12-31",
+      "total_value": 12000000000,
+      "position_count": 28
+    },
+    {
+      "id": "baupost-2024-q4",
+      "fund_id": "baupost-group",
+      "quarter": "2024-Q4",
+      "filing_date": "2025-02-14",
+      "report_date": "2024-12-31",
+      "total_value": 8500000000,
+      "position_count": 22
+    },
+    {
+      "id": "lone-pine-2024-q4",
+      "fund_id": "lone-pine-capital",
+      "quarter": "2024-Q4",
+      "filing_date": "2025-02-14",
+      "report_date": "2024-12-31",
+      "total_value": 6800000000,
+      "position_count": 25
+    },
+    {
+      "id": "d1-capital-2024-q4",
+      "fund_id": "d1-capital",
+      "quarter": "2024-Q4",
+      "filing_date": "2025-02-14",
+      "report_date": "2024-12-31",
+      "total_value": 5200000000,
+      "position_count": 32
+    },
+    {
+      "id": "greenlight-2024-q4",
+      "fund_id": "greenlight-capital",
+      "quarter": "2024-Q4",
+      "filing_date": "2025-02-14",
+      "report_date": "2024-12-31",
+      "total_value": 950000000,
+      "position_count": 18
+    },
+    {
+      "id": "tci-fund-2024-q4",
+      "fund_id": "tci-fund",
+      "quarter": "2024-Q4",
+      "filing_date": "2025-02-14",
+      "report_date": "2024-12-31",
+      "total_value": 45000000000,
+      "position_count": 12
+    }
+  ],
+  "positions": [
+    {
+      "id": "coatue-2024-q4-meta",
+      "filing_id": "coatue-2024-q4",
+      "ticker": "META",
+      "cusip": "30303M102",
+      "company_name": "Meta Platforms Inc",
+      "shares": 2500000,
+      "value": 1250000000,
+      "portfolio_pct": 8.3,
+      "rank": 1
+    },
+    {
+      "id": "coatue-2024-q4-nvda",
+      "filing_id": "coatue-2024-q4",
+      "ticker": "NVDA",
+      "cusip": "67066G104",
+      "company_name": "NVIDIA Corporation",
+      "shares": 4200000,
+      "value": 1260000000,
+      "portfolio_pct": 8.4,
+      "rank": 2
+    },
+    {
+      "id": "coatue-2024-q4-amzn",
+      "filing_id": "coatue-2024-q4",
+      "ticker": "AMZN",
+      "cusip": "023135106",
+      "company_name": "Amazon.com Inc",
+      "shares": 6500000,
+      "value": 1100000000,
+      "portfolio_pct": 7.3,
+      "rank": 3
+    },
+    {
+      "id": "coatue-2024-q4-googl",
+      "filing_id": "coatue-2024-q4",
+      "ticker": "GOOGL",
+      "cusip": "02079K305",
+      "company_name": "Alphabet Inc Class A",
+      "shares": 5500000,
+      "value": 980000000,
+      "portfolio_pct": 6.5,
+      "rank": 4
+    },
+    {
+      "id": "coatue-2024-q4-now",
+      "filing_id": "coatue-2024-q4",
+      "ticker": "NOW",
+      "cusip": "81762P102",
+      "company_name": "ServiceNow Inc",
+      "shares": 1200000,
+      "value": 850000000,
+      "portfolio_pct": 5.7,
+      "rank": 5
+    },
+    {
+      "id": "viking-2024-q4-msft",
+      "filing_id": "viking-2024-q4",
+      "ticker": "MSFT",
+      "cusip": "594918104",
+      "company_name": "Microsoft Corporation",
+      "shares": 2800000,
+      "value": 1020000000,
+      "portfolio_pct": 8.5,
+      "rank": 1
+    },
+    {
+      "id": "viking-2024-q4-v",
+      "filing_id": "viking-2024-q4",
+      "ticker": "V",
+      "cusip": "92826C839",
+      "company_name": "Visa Inc",
+      "shares": 3200000,
+      "value": 890000000,
+      "portfolio_pct": 7.4,
+      "rank": 2
+    },
+    {
+      "id": "viking-2024-q4-unh",
+      "filing_id": "viking-2024-q4",
+      "ticker": "UNH",
+      "cusip": "91324P102",
+      "company_name": "UnitedHealth Group Inc",
+      "shares": 1400000,
+      "value": 720000000,
+      "portfolio_pct": 6.0,
+      "rank": 3
+    },
+    {
+      "id": "baupost-2024-q4-qsr",
+      "filing_id": "baupost-2024-q4",
+      "ticker": "QSR",
+      "cusip": "76141D103",
+      "company_name": "Restaurant Brands International Inc",
+      "shares": 9500000,
+      "value": 680000000,
+      "portfolio_pct": 8.0,
+      "rank": 1
+    },
+    {
+      "id": "baupost-2024-q4-lbtyk",
+      "filing_id": "baupost-2024-q4",
+      "ticker": "LBTYK",
+      "cusip": "53071M885",
+      "company_name": "Liberty Global PLC",
+      "shares": 28000000,
+      "value": 520000000,
+      "portfolio_pct": 6.1,
+      "rank": 2
+    },
+    {
+      "id": "lone-pine-2024-q4-tsm",
+      "filing_id": "lone-pine-2024-q4",
+      "ticker": "TSM",
+      "cusip": "874039100",
+      "company_name": "Taiwan Semiconductor Manufacturing",
+      "shares": 4200000,
+      "value": 850000000,
+      "portfolio_pct": 12.5,
+      "rank": 1
+    },
+    {
+      "id": "lone-pine-2024-q4-msft",
+      "filing_id": "lone-pine-2024-q4",
+      "ticker": "MSFT",
+      "cusip": "594918104",
+      "company_name": "Microsoft Corporation",
+      "shares": 1800000,
+      "value": 650000000,
+      "portfolio_pct": 9.6,
+      "rank": 2
+    },
+    {
+      "id": "d1-capital-2024-q4-nke",
+      "filing_id": "d1-capital-2024-q4",
+      "ticker": "NKE",
+      "cusip": "654106103",
+      "company_name": "Nike Inc",
+      "shares": 5500000,
+      "value": 480000000,
+      "portfolio_pct": 9.2,
+      "rank": 1
+    },
+    {
+      "id": "greenlight-2024-q4-grbk",
+      "filing_id": "greenlight-2024-q4",
+      "ticker": "GRBK",
+      "cusip": "39255C105",
+      "company_name": "Green Brick Partners Inc",
+      "shares": 4200000,
+      "value": 280000000,
+      "portfolio_pct": 29.5,
+      "rank": 1
+    },
+    {
+      "id": "tci-2024-q4-ge",
+      "filing_id": "tci-fund-2024-q4",
+      "ticker": "GE",
+      "cusip": "369604301",
+      "company_name": "General Electric Company",
+      "shares": 25000000,
+      "value": 4200000000,
+      "portfolio_pct": 9.3,
+      "rank": 1
+    },
+    {
+      "id": "tci-2024-q4-msft",
+      "filing_id": "tci-fund-2024-q4",
+      "ticker": "MSFT",
+      "cusip": "594918104",
+      "company_name": "Microsoft Corporation",
+      "shares": 8500000,
+      "value": 3100000000,
+      "portfolio_pct": 6.9,
+      "rank": 2
+    }
+  ]
+}
