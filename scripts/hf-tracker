@@ -1,0 +1,314 @@
+#!/usr/bin/env python3
+"""
+Hedge Fund 13F Tracker - Main CLI
+Commands: list-funds, holdings, report, compare
+"""
+import sqlite3
+import argparse
+from pathlib import Path
+from typing import Optional
+import sys
+
+# Database path (relative to project root)
+DB_PATH = Path(__file__).parent.parent / 'data' / 'tracker.db'
+
+
+class TrackerCLI:
+    """Main CLI interface for 13F Tracker"""
+    
+    def __init__(self, db_path: Path = DB_PATH):
+        self.db_path = db_path
+        self.conn = None
+    
+    def connect(self):
+        """Connect to database"""
+        if not self.db_path.exists():
+            print(f"❌ Database not found: {self.db_path}")
+            print("Run: python scripts/init_db.py")
+            sys.exit(1)
+        self.conn = sqlite3.connect(self.db_path)
+        self.conn.row_factory = sqlite3.Row
+    
+    def close(self):
+        """Close database connection"""
+        if self.conn:
+            self.conn.close()
+    
+    def list_funds(self):
+        """List all tracked funds"""
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            SELECT f.id, f.name, f.manager, f.strategy, f.aum, f.cik,
+                   COUNT(DISTINCT fil.id) as filing_count,
+                   MAX(fil.quarter) as latest_quarter
+            FROM funds f
+            LEFT JOIN filings fil ON f.id = fil.fund_id
+            GROUP BY f.id
+            ORDER BY f.aum DESC
+        ''')
+        
+        funds = cursor.fetchall()
+        
+        print("\n🐋 Tracked Hedge Funds\n")
+        print("=" * 80)
+        print(f"{'Fund':<25} {'Manager':<20} {'AUM':>12} {'Quarter':<10} {'Filings':>8}")
+        print("-" * 80)
+        
+        for fund in funds:
+            aum = f"${fund['aum']/1e9:.1f}B" if fund['aum'] and fund['aum'] >= 1e9 else f"${fund['aum']/1e6:.0f}M" if fund['aum'] else "N/A"
+            quarter = fund['latest_quarter'] or 'N/A'
+            print(f"{fund['name'][:24]:<25} {fund['manager'] or 'Unknown':<20} {aum:>12} {quarter:<10} {fund['filing_count']:>8}")
+        
+        print("=" * 80)
+        print(f"\nTotal: {len(funds)} funds\n")
+    
+    def show_holdings(self, fund_id: str, quarter: Optional[str] = None, top: int = 20):
+        """Show holdings for a specific fund"""
+        cursor = self.conn.cursor()
+        
+        # Get fund info
+        cursor.execute('SELECT * FROM funds WHERE id = ?', (fund_id,))
+        fund = cursor.fetchone()
+        
+        if not fund:
+            print(f"❌ Fund not found: {fund_id}")
+            print("Run: hf-tracker list-funds")
+            return
+        
+        # Determine quarter
+        if not quarter:
+            cursor.execute('''
+                SELECT quarter FROM filings 
+                WHERE fund_id = ? 
+                ORDER BY quarter DESC LIMIT 1
+            ''', (fund_id,))
+            result = cursor.fetchone()
+            quarter = result['quarter'] if result else None
+        
+        if not quarter:
+            print(f"❌ No filings found for {fund_id}")
+            return
+        
+        # Get holdings
+        cursor.execute('''
+            SELECT p.*, f.total_value as fund_total
+            FROM positions p
+            JOIN filings f ON p.filing_id = f.id
+            WHERE f.fund_id = ? AND f.quarter = ?
+            GROUP BY p.ticker
+            ORDER BY p.value DESC
+            LIMIT ?
+        ''', (fund_id, quarter, top))
+        
+        holdings = cursor.fetchall()
+        
+        if not holdings:
+            print(f"❌ No holdings found for {fund_id} {quarter}")
+            return
+        
+        # Display
+        aum_str = f"${fund['aum']/1e9:.1f}B" if fund['aum'] and fund['aum'] >= 1e9 else f"${fund['aum']/1e6:.0f}M" if fund['aum'] else "N/A"
+        
+        print(f"\n📊 {fund['name']} - {quarter} 13F")
+        print(f"Manager: {fund['manager'] or 'Unknown'} | AUM: {aum_str}")
+        print("=" * 90)
+        print(f"{'Rank':<6} {'Ticker':<8} {'Company':<30} {'Shares':>12} {'Value':>14} {'Weight':>10}")
+        print("-" * 90)
+        
+        total_value = 0
+        for h in holdings:
+            value_str = f"${h['value']/1e6:.1f}M" if h['value'] >= 1e6 else f"${h['value']/1e3:.0f}K"
+            shares_str = f"{h['shares']/1e6:.2f}M" if h['shares'] >= 1e6 else f"{h['shares']/1e3:.0f}K" if h['shares'] >= 1e3 else str(h['shares'])
+            weight_str = f"{h['portfolio_pct']:.1f}%"
+            company_name = h['company_name'][:29] if h['company_name'] else h['ticker']
+            
+            print(f"{h['rank']:<6} {h['ticker']:<8} {company_name:<30} {shares_str:>12} {value_str:>14} {weight_str:>10}")
+            total_value += h['value']
+        
+        print("-" * 90)
+        print(f"{'Total':<6} {'':<8} {'':<30} {'':>12} ${total_value/1e9:.2f}B{'':>6} {min(100, sum(h['portfolio_pct'] for h in holdings)):.1f}%")
+        print("=" * 90)
+        print(f"\nShowing top {len(holdings)} positions\n")
+    
+    def compare_quarters(self, fund_id: str, q1: str, q2: str):
+        """Compare holdings between two quarters"""
+        cursor = self.conn.cursor()
+        
+        # Get positions for both quarters
+        cursor.execute('''
+            SELECT p.ticker, p.company_name, p.shares, p.value, p.portfolio_pct, p.rank
+            FROM positions p
+            JOIN filings f ON p.filing_id = f.id
+            WHERE f.fund_id = ? AND f.quarter = ?
+            ORDER BY p.rank
+        ''', (fund_id, q1))
+        q1_positions = {p['ticker']: p for p in cursor.fetchall()}
+        
+        cursor.execute('''
+            SELECT p.ticker, p.company_name, p.shares, p.value, p.portfolio_pct, p.rank
+            FROM positions p
+            JOIN filings f ON p.filing_id = f.id
+            WHERE f.fund_id = ? AND f.quarter = ?
+            ORDER BY p.rank
+        ''', (fund_id, q2))
+        q2_positions = {p['ticker']: p for p in cursor.fetchall()}
+        
+        # Get fund info
+        cursor.execute('SELECT name FROM funds WHERE id = ?', (fund_id,))
+        fund = cursor.fetchone()
+        fund_name = fund['name'] if fund else fund_id
+        
+        print(f"\n📈 {fund_name}")
+        print(f"Comparing {q1} → {q2}\n")
+        
+        # Analyze changes
+        all_tickers = set(q1_positions.keys()) | set(q2_positions.keys())
+        
+        new_positions = []
+        sold_positions = []
+        increased = []
+        decreased = []
+        unchanged = []
+        
+        for ticker in all_tickers:
+            p1 = q1_positions.get(ticker)
+            p2 = q2_positions.get(ticker)
+            
+            if not p1 and p2:
+                new_positions.append((ticker, p2))
+            elif p1 and not p2:
+                sold_positions.append((ticker, p1))
+            elif p1 and p2:
+                share_change = p2['shares'] - p1['shares']
+                pct_change = (share_change / p1['shares'] * 100) if p1['shares'] > 0 else 0
+                
+                if abs(pct_change) < 1:
+                    unchanged.append((ticker, p1, p2, pct_change))
+                elif share_change > 0:
+                    increased.append((ticker, p1, p2, pct_change))
+                else:
+                    decreased.append((ticker, p1, p2, pct_change))
+        
+        # Display results
+        if new_positions:
+            print("🆕 NEW POSITIONS:")
+            for ticker, p in sorted(new_positions, key=lambda x: x[1]['value'], reverse=True):
+                print(f"   {ticker:<6} {p['company_name'][:30]:<32} ${p['value']/1e6:>7.1f}M ({p['portfolio_pct']:.1f}%)")
+            print()
+        
+        if sold_positions:
+            print("❌ SOLD OUT:")
+            for ticker, p in sorted(sold_positions, key=lambda x: x[1]['value'], reverse=True):
+                print(f"   {ticker:<6} {p['company_name'][:30]:<32} (was ${p['value']/1e6:>7.1f}M)")
+            print()
+        
+        if increased:
+            print("📈 INCREASED:")
+            for ticker, p1, p2, pct in sorted(increased, key=lambda x: x[3], reverse=True)[:10]:
+                print(f"   {ticker:<6} +{pct:>6.1f}%  {p1['shares']/1e3:.0f}K → {p2['shares']/1e3:.0f}K shares")
+            print()
+        
+        if decreased:
+            print("📉 DECREASED:")
+            for ticker, p1, p2, pct in sorted(decreased, key=lambda x: x[3])[:10]:
+                print(f"   {ticker:<6} {pct:>7.1f}%  {p1['shares']/1e3:.0f}K → {p2['shares']/1e3:.0f}K shares")
+            print()
+        
+        print(f"Summary: {len(new_positions)} new, {len(sold_positions)} sold, "
+              f"{len(increased)} increased, {len(decreased)} decreased, "
+              f"{len(unchanged)} unchanged\n")
+    
+    def show_consensus(self, ticker: str):
+        """Show consensus view across all funds for a ticker"""
+        cursor = self.conn.cursor()
+        
+        cursor.execute('''
+            SELECT f.name as fund_name, p.shares, p.value, p.portfolio_pct, p.rank, fil.quarter
+            FROM positions p
+            JOIN filings fil ON p.filing_id = fil.id
+            JOIN funds f ON fil.fund_id = f.id
+            WHERE p.ticker = ?
+            ORDER BY p.value DESC
+        ''', (ticker.upper(),))
+        
+        holdings = cursor.fetchall()
+        
+        if not holdings:
+            print(f"❌ No funds hold {ticker}")
+            return
+        
+        print(f"\n🎯 {ticker} - Institutional Holdings\n")
+        print("=" * 80)
+        print(f"{'Fund':<30} {'Quarter':<10} {'Shares':>12} {'Value':>12} {'Weight':>10}")
+        print("-" * 80)
+        
+        total_value = 0
+        for h in holdings:
+            shares_str = f"{h['shares']/1e6:.2f}M" if h['shares'] >= 1e6 else f"{h['shares']/1e3:.0f}K"
+            value_str = f"${h['value']/1e6:.1f}M"
+            weight_str = f"{h['portfolio_pct']:.1f}%"
+            print(f"{h['fund_name'][:29]:<30} {h['quarter']:<10} {shares_str:>12} {value_str:>12} {weight_str:>10}")
+            total_value += h['value']
+        
+        print("=" * 80)
+        print(f"\n{len(holdings)} funds hold {ticker} with ${total_value/1e6:.1f}M total value\n")
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description='Hedge Fund 13F Tracker - Track institutional smart money',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  hf-tracker list-funds                    # Show all tracked funds
+  hf-tracker holdings --fund atreides      # Show Atreides holdings
+  hf-tracker compare --fund atreides -q1 2024-Q3 -q2 2024-Q4
+  hf-tracker consensus --ticker NVDA       # Show who holds NVDA
+        """
+    )
+    
+    subparsers = parser.add_subparsers(dest='command', help='Available commands')
+    
+    # list-funds command
+    subparsers.add_parser('list-funds', help='List all tracked hedge funds')
+    
+    # holdings command
+    holdings_parser = subparsers.add_parser('holdings', help='Show fund holdings')
+    holdings_parser.add_argument('--fund', '-f', required=True, help='Fund ID')
+    holdings_parser.add_argument('--quarter', '-q', help='Quarter (e.g., 2024-Q4)')
+    holdings_parser.add_argument('--top', '-t', type=int, default=20, help='Show top N positions')
+    
+    # compare command
+    compare_parser = subparsers.add_parser('compare', help='Compare quarters')
+    compare_parser.add_argument('--fund', '-f', required=True, help='Fund ID')
+    compare_parser.add_argument('-q1', '--quarter1', required=True, help='First quarter')
+    compare_parser.add_argument('-q2', '--quarter2', required=True, help='Second quarter')
+    
+    # consensus command
+    consensus_parser = subparsers.add_parser('consensus', help='Show consensus for ticker')
+    consensus_parser.add_argument('--ticker', '-t', required=True, help='Stock ticker')
+    
+    args = parser.parse_args()
+    
+    if not args.command:
+        parser.print_help()
+        sys.exit(1)
+    
+    cli = TrackerCLI()
+    cli.connect()
+    
+    try:
+        if args.command == 'list-funds':
+            cli.list_funds()
+        elif args.command == 'holdings':
+            cli.show_holdings(args.fund, args.quarter, args.top)
+        elif args.command == 'compare':
+            cli.compare_quarters(args.fund, args.quarter1, args.quarter2)
+        elif args.command == 'consensus':
+            cli.show_consensus(args.ticker)
+    finally:
+        cli.close()
+
+
+if __name__ == '__main__':
+    main()

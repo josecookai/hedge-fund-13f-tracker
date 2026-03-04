@@ -47,6 +47,15 @@
   ],
   "filings": [
     {
+      "id": "atreides-2024-q3",
+      "fund_id": "atreides-management",
+      "quarter": "2024-Q3",
+      "filing_date": "2024-11-14",
+      "report_date": "2024-09-30",
+      "total_value": 1750000000,
+      "position_count": 26
+    },
+    {
       "id": "atreides-2024-q4",
       "fund_id": "atreides-management",
       "quarter": "2024-Q4",
@@ -54,9 +63,104 @@
       "report_date": "2024-12-31",
       "total_value": 1850000000,
       "position_count": 28
+    },
+    {
+      "id": "monolith-2024-q4",
+      "fund_id": "monolith-management",
+      "quarter": "2024-Q4",
+      "filing_date": "2025-02-13",
+      "report_date": "2024-12-31",
+      "total_value": 209648000,
+      "position_count": 19
+    },
+    {
+      "id": "situational-2024-q4",
+      "fund_id": "situational-awareness",
+      "quarter": "2024-Q4",
+      "filing_date": "2025-02-14",
+      "report_date": "2024-12-31",
+      "total_value": 5516758345,
+      "position_count": 25
     }
   ],
   "positions": [
+    {
+      "id": "atreides-2024-q3-nvda",
+      "filing_id": "atreides-2024-q3",
+      "ticker": "NVDA",
+      "cusip": "67066G104",
+      "company_name": "NVIDIA Corporation",
+      "shares": 1300000,
+      "value": 390000000,
+      "portfolio_pct": 22.3,
+      "rank": 2
+    },
+    {
+      "id": "atreides-2024-q3-meta",
+      "filing_id": "atreides-2024-q3",
+      "ticker": "META",
+      "cusip": "30303M102",
+      "company_name": "Meta Platforms Inc",
+      "shares": 760000,
+      "value": 304000000,
+      "portfolio_pct": 17.4,
+      "rank": 3
+    },
+    {
+      "id": "atreides-2024-q3-amzn",
+      "filing_id": "atreides-2024-q3",
+      "ticker": "AMZN",
+      "cusip": "023135106",
+      "company_name": "Amazon.com Inc",
+      "shares": 1225000,
+      "value": 215000000,
+      "portfolio_pct": 12.3,
+      "rank": 4
+    },
+    {
+      "id": "atreides-2024-q3-goog",
+      "filing_id": "atreides-2024-q3",
+      "ticker": "GOOGL",
+      "cusip": "02079K305",
+      "company_name": "Alphabet Inc Class A",
+      "shares": 1200000,
+      "value": 420000000,
+      "portfolio_pct": 24.0,
+      "rank": 1
+    },
+    {
+      "id": "atreides-2024-q3-msft",
+      "filing_id": "atreides-2024-q3",
+      "ticker": "MSFT",
+      "cusip": "594918104",
+      "company_name": "Microsoft Corporation",
+      "shares": 400000,
+      "value": 140000000,
+      "portfolio_pct": 8.0,
+      "rank": 5
+    },
+    {
+      "id": "atreides-2024-q3-avgo",
+      "filing_id": "atreides-2024-q3",
+      "ticker": "AVGO",
+      "cusip": "11135F101",
+      "company_name": "Broadcom Inc",
+      "shares": 70000,
+      "value": 84000000,
+      "portfolio_pct": 4.8,
+      "rank": 6
+    },
+    {
+      "id": "atreides-2024-q3-pltr",
+      "filing_id": "atreides-2024-q3",
+      "ticker": "PLTR",
+      "cusip": "69608A108",
+      "company_name": "Palantir Technologies",
+      "shares": 1500000,
+      "value": 75000000,
+      "portfolio_pct": 4.3,
+      "rank": 7
+    },
     {
       "id": "atreides-2024-q4-nvda",
       "filing_id": "atreides-2024-q4",
@@ -166,6 +270,94 @@
       "value": 32000000,
       "portfolio_pct": 1.7,
       "rank": 10
+    },
+    {
+      "id": "monolith-2024-q4-googl",
+      "filing_id": "monolith-2024-q4",
+      "ticker": "GOOGL",
+      "cusip": "02079K305",
+      "company_name": "Alphabet Inc Class A",
+      "shares": 120960,
+      "value": 57507000,
+      "portfolio_pct": 27.4,
+      "rank": 1
+    },
+    {
+      "id": "monolith-2024-q4-snps",
+      "filing_id": "monolith-2024-q4",
+      "ticker": "SNPS",
+      "cusip": "871607107",
+      "company_name": "Synopsys Inc",
+      "shares": 93570,
+      "value": 43952000,
+      "portfolio_pct": 21.0,
+      "rank": 2
+    },
+    {
+      "id": "monolith-2024-q4-nvda",
+      "filing_id": "monolith-2024-q4",
+      "ticker": "NVDA",
+      "cusip": "67066G104",
+      "company_name": "NVIDIA Corporation",
+      "shares": 45000,
+      "value": 27500000,
+      "portfolio_pct": 13.1,
+      "rank": 3
+    },
+    {
+      "id": "situational-2024-q4-avgo",
+      "filing_id": "situational-2024-q4",
+      "ticker": "AVGO",
+      "cusip": "11135F101",
+      "company_name": "Broadcom Inc",
+      "shares": 800000,
+      "value": 480000000,
+      "portfolio_pct": 8.7,
+      "rank": 3
+    },
+    {
+      "id": "situational-2024-q4-vst",
+      "filing_id": "situational-2024-q4",
+      "ticker": "VST",
+      "cusip": "92840M102",
+      "company_name": "Vistra Corp",
+      "shares": 3200000,
+      "value": 512000000,
+      "portfolio_pct": 9.3,
+      "rank": 2
+    },
+    {
+      "id": "situational-2024-q4-nvda",
+      "filing_id": "situational-2024-q4",
+      "ticker": "NVDA",
+      "cusip": "67066G104",
+      "company_name": "NVIDIA Corporation",
+      "shares": 2500000,
+      "value": 750000000,
+      "portfolio_pct": 13.6,
+      "rank": 1
+    },
+    {
+      "id": "situational-2024-q4-mu",
+      "filing_id": "situational-2024-q4",
+      "ticker": "MU",
+      "cusip": "595112103",
+      "company_name": "Micron Technology Inc",
+      "shares": 4200000,
+      "value": 385000000,
+      "portfolio_pct": 7.0,
+      "rank": 4
+    },
+    {
+      "id": "situational-2024-q4-tsm",
+      "filing_id": "situational-2024-q4",
+      "ticker": "TSM",
+      "cusip": "874039100",
+      "company_name": "Taiwan Semiconductor",
+      "shares": 2200000,
+      "value": 352000000,
+      "portfolio_pct": 6.4,
+      "rank": 5
     }
   ]
 }
