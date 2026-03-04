@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  # 13F Tracker Web Dashboard
+  tracker-web:
+    build: .
+    container_name: hf-13f-tracker
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config
+    environment:
+      - DATABASE_PATH=/app/data/tracker.db
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/api/funds')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - tracker-network
+
+  # Optional: Telegram Bot (requires TELEGRAM_BOT_TOKEN)
+  tracker-bot:
+    build: .
+    container_name: hf-13f-bot
+    command: python scripts/telegram_bot.py --token ${TELEGRAM_BOT_TOKEN:-placeholder}
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config
+    environment:
+      - DATABASE_PATH=/app/data/tracker.db
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+    restart: unless-stopped
+    depends_on:
+      - tracker-web
+    networks:
+      - tracker-network
+    profiles:
+      - bot  # Only start when explicitly requested
+
+  # Optional: Daily Email Reporter (cron-like)
+  tracker-reporter:
+    build: .
+    container_name: hf-13f-reporter
+    command: >
+      sh -c "while true; do
+        python scripts/email_reporter.py --to $${REPORT_EMAIL} --type daily;
+        sleep 86400;
+      done"
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config
+    environment:
+      - DATABASE_PATH=/app/data/tracker.db
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - REPORT_EMAIL=${REPORT_EMAIL}
+    restart: unless-stopped
+    depends_on:
+      - tracker-web
+    networks:
+      - tracker-network
+    profiles:
+      - reporter  # Only start when explicitly requested
+
+networks:
+  tracker-network:
+    driver: bridge
+
+volumes:
+  tracker-data:
+    driver: local
