@@ -39,10 +39,19 @@ def init_database(db_path='data/tracker.db', schema_path='data/schema.sql', forc
     
     return conn
 
-def seed_data(conn, seed_path='data/seed_data.json'):
+def seed_data(conn, seed_path='data/seed_data.json', force=False):
     """Seed database with initial data"""
     
     cursor = conn.cursor()
+    
+    # Check if data already exists
+    cursor.execute('SELECT COUNT(*) FROM funds')
+    fund_count = cursor.fetchone()[0]
+    
+    if fund_count > 0 and not force:
+        print(f"Database already has {fund_count} funds, skipping seed data")
+        print("Use --force to re-seed")
+        return
     
     print(f"Loading seed data from {seed_path}...")
     with open(seed_path, 'r') as f:
@@ -52,7 +61,7 @@ def seed_data(conn, seed_path='data/seed_data.json'):
     print(f"Inserting {len(data['funds'])} funds...")
     for fund in data['funds']:
         cursor.execute('''
-            INSERT INTO funds (id, name, manager, strategy, aum, cik)
+            INSERT OR REPLACE INTO funds (id, name, manager, strategy, aum, cik)
             VALUES (?, ?, ?, ?, ?, ?)
         ''', (
             fund['id'],
@@ -67,7 +76,7 @@ def seed_data(conn, seed_path='data/seed_data.json'):
     print(f"Inserting {len(data['filings'])} filings...")
     for filing in data['filings']:
         cursor.execute('''
-            INSERT INTO filings (id, fund_id, quarter, filing_date, report_date, total_value, position_count)
+            INSERT OR REPLACE INTO filings (id, fund_id, quarter, filing_date, report_date, total_value, position_count)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         ''', (
             filing['id'],
@@ -83,7 +92,7 @@ def seed_data(conn, seed_path='data/seed_data.json'):
     print(f"Inserting {len(data['positions'])} positions...")
     for position in data['positions']:
         cursor.execute('''
-            INSERT INTO positions (id, filing_id, ticker, cusip, company_name, shares, value, portfolio_pct, rank)
+            INSERT OR REPLACE INTO positions (id, filing_id, ticker, cusip, company_name, shares, value, portfolio_pct, rank)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             position['id'],
@@ -163,7 +172,7 @@ def main():
         conn = init_database(args.db, args.schema, force=args.force)
         
         # Seed data
-        seed_data(conn, args.seed)
+        seed_data(conn, args.seed, force=args.force)
         
         # Verify if requested
         if args.verify:
