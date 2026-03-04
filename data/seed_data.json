@@ -1,0 +1,76 @@
+{
+  "funds": [
+    {
+      "name": "Atreides Management",
+      "cik": "0001761945",
+      "manager": "Gavin Baker",
+      "source_url": "https://whalewisdom.com/filer/atreides-management-lp"
+    },
+    {
+      "name": "Monolith Management",
+      "cik": null,
+      "manager": null,
+      "source_url": "https://whalewisdom.com/filer/monolith-management"
+    },
+    {
+      "name": "WT Asset Management",
+      "cik": null,
+      "manager": null,
+      "source_url": "https://whalewisdom.com/filer/wt-asset-management"
+    },
+    {
+      "name": "Situational Awareness LP",
+      "cik": null,
+      "manager": null,
+      "source_url": "https://whalewisdom.com/filer/situational-awareness-lp"
+    }
+  ],
+  "filings": [
+    {
+      "fund_name": "Atreides Management",
+      "quarter": "2024Q4",
+      "period_date": "2024-12-31",
+      "filed_date": "2025-02-14",
+      "total_value": 2100.5,
+      "source": "manual"
+    }
+  ],
+  "positions": [
+    {
+      "fund_name": "Atreides Management",
+      "quarter": "2024Q4",
+      "ticker": "META",
+      "company_name": "Meta Platforms Inc",
+      "shares": 850000,
+      "value_usd": 612000,
+      "pct_portfolio": 29.1,
+      "change_type": "ADDED",
+      "change_pct": 12.5,
+      "prev_shares": 755500
+    },
+    {
+      "fund_name": "Atreides Management",
+      "quarter": "2024Q4",
+      "ticker": "NVDA",
+      "company_name": "NVIDIA Corp",
+      "shares": 1200000,
+      "value_usd": 146400,
+      "pct_portfolio": 6.97,
+      "change_type": "NEW",
+      "change_pct": null,
+      "prev_shares": null
+    },
+    {
+      "fund_name": "Atreides Management",
+      "quarter": "2024Q4",
+      "ticker": "AMZN",
+      "company_name": "Amazon.com Inc",
+      "shares": 900000,
+      "value_usd": 189000,
+      "pct_portfolio": 9.0,
+      "change_type": "REDUCED",
+      "change_pct": -8.2,
+      "prev_shares": 980000
+    }
+  ]
+}

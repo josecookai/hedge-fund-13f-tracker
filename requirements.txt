@@ -1,0 +1,12 @@
+click>=8.1
+rich>=13.0
+requests>=2.31
+beautifulsoup4>=4.12
+python-dotenv>=1.0
+# dev
+pytest>=7.4
+pytest-cov>=4.1
+ruff>=0.1
+# web (Sprint 2)
+fastapi>=0.110
+uvicorn[standard]>=0.27
